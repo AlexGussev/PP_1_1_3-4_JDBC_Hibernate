@@ -15,12 +15,11 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     }
 
     public void createUsersTable() {
-        String sqlCreateUsersTable = "CREATE TABLE TableUser(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-                "UserName VARCHAR(50), " +
-                "UserLastName VARCHAR(50), " +
-                "UserAge TINYINT)";
         try (Statement statement = getConn().createStatement()) {
-            statement.executeUpdate(sqlCreateUsersTable);
+            statement.executeUpdate("CREATE TABLE TableUser(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," +
+                    "UserName VARCHAR(50), " +
+                    "UserLastName VARCHAR(50), " +
+                    "UserAge TINYINT)");
             System.out.println("Таблица создана успешно!");
         } catch (SQLException e) {
             System.out.println("Таблица не создана!");
@@ -28,18 +27,17 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     }
 
     public void dropUsersTable() {
-        String sqlDropUsersTable = "DROP TABLE TableUser";
         try (Statement statement = getConn().createStatement();){
-            statement.executeUpdate(sqlDropUsersTable);
+            statement.executeUpdate("DROP TABLE TableUser");
         } catch (SQLException e) {
             System.out.println();
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String sqlSaveUser = "INSERT INTO TableUser(Username, UserLastName, UserAge) " +
-                "VALUES (?,?,?)";
-        try (PreparedStatement preparedStatement = getConn().prepareStatement(sqlSaveUser)){
+        try (PreparedStatement preparedStatement = getConn().prepareStatement("INSERT INTO " +
+                "TableUser(Username, UserLastName, UserAge) " +
+                "VALUES (?,?,?)")){
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setInt(3, age);
@@ -51,8 +49,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     }
 
     public void removeUserById(long id) {
-        String sqlremoveUsersById = "DELETE FROM TableUser WHERE ID = ?";
-        try (PreparedStatement preparedStatement = getConn().prepareStatement(sqlremoveUsersById)) {
+        try (PreparedStatement preparedStatement = getConn().prepareStatement("DELETE FROM TableUser WHERE ID = ?")) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -61,11 +58,10 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     }
 
     public List<User> getAllUsers() {
-        String sqlGetAllUsers = "SELECT * FROM TableUser";
         User user = new User();
         List<User> list = new LinkedList<>();
         try (Statement statement = getConn().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sqlGetAllUsers);
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM TableUser");
             while (resultSet.next()) {
                 user.setId(resultSet.getLong("id"));
                 user.setName(resultSet.getString("UserName"));
@@ -81,9 +77,8 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
 
 
     public void cleanUsersTable() {
-        String sqlCleanUsersTable = "TRUNCATE TABLE TableUser";
-        try (Statement statement = getConn().createStatement();){
-            statement.executeUpdate(sqlCleanUsersTable);
+        try (Statement statement = getConn().createStatement()){
+            statement.executeUpdate("TRUNCATE TABLE TableUser");
         } catch (SQLException e) {
             System.out.println();
         }
